@@ -44,7 +44,9 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 dir('/home/ubuntu/projects/express-frontend') {
-                    sh 'npm ci'
+                    sh '''
+                        npm ci
+                    '''
                 }
             }
         }
@@ -60,8 +62,13 @@ pipeline {
         stage('Health Check') {
             steps {
                 sh '''
+                    echo "Waiting for Express to start..."
+                    sleep 5
+
                     curl --fail --silent --show-error \
-                      --retry 5 --retry-delay 2 \
+                      --retry 10 \
+                      --retry-delay 2 \
+                      --retry-connrefused \
                       http://127.0.0.1:3000/
                 '''
             }
